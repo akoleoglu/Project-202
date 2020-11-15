@@ -1,15 +1,12 @@
 AWSTemplateFormatVersion: 2010-09-09
-
 Description: >
   This Cloudformation Template deploys Phonebook Application to five Docker Machines on EC2 Instances
   which are ready for Docker Swarm operations.
-
 Parameters:
   KeyPairName:
     Description: Enter the name of your Key Pair for SSH connections.
     Type: AWS::EC2::KeyPair::KeyName
     ConstraintDescription: Must be one of the existing EC2 KeyPair
-
 Resources:
   InstanceConnectPolicy:
     Type: "AWS::IAM::ManagedPolicy"
@@ -27,7 +24,6 @@ Resources:
             Action:
               - ec2:DescribeInstances
             Resource: "*"
-  
   EC2InstanceConnect:
     Type: "AWS::IAM::Role"
     Properties:
@@ -42,13 +38,11 @@ Resources:
       ManagedPolicyArns:
         - !Ref InstanceConnectPolicy
         - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess
-  
   EC2ConnectProfile:
     Type: "AWS::IAM::InstanceProfile"
     Properties:
       Roles: #required
         - !Ref EC2InstanceConnect
-
   DockerMachinesSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -82,7 +76,6 @@ Resources:
           FromPort: 8080
           ToPort: 8080
           CidrIp: 0.0.0.0/0
-  
   DockerSwarmManagerLT:
     Type: "AWS::EC2::LaunchTemplate"
     Properties:
@@ -119,7 +112,6 @@ Resources:
               mkdir -p /home/ec2-user/.docker
               cd /home/ec2-user/.docker
               echo '{"credsStore": "ecr-login"}' > config.json
-
   DockerSwarmWorkerLT:
     Type: "AWS::EC2::LaunchTemplate"
     Properties:
@@ -156,7 +148,6 @@ Resources:
               mkdir -p /home/ec2-user/.docker
               cd /home/ec2-user/.docker
               echo '{"credsStore": "ecr-login"}' > config.json
-
   DockerManager1:
     Type: AWS::EC2::Instance
     Properties:
@@ -220,8 +211,8 @@ Resources:
               docker-compose config | docker stack deploy --with-registry-auth -c - phonebook
             - ECR_REGISTRY: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com
               APP_REPO_NAME: clarusway-repo/phonebook-app
-              GITHUB_REPO: https://github.com/callahan-cw/Project-202.git
-              GIT_FILE_URL: https://raw.githubusercontent.com/callahan-cw/Project-202/master/
+              GITHUB_REPO: https://github.com/akoleoglu/Project-202.git
+              GIT_FILE_URL: https://raw.githubusercontent.com/akoleoglu/Project-202/master/
   DockerManager2:
     Type: AWS::EC2::Instance
     DependsOn:
